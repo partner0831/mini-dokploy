@@ -1,0 +1,60 @@
+version: "3.8"
+
+networks:
+  traefik-public:
+    driver: overlay
+    attachable: true
+
+services:
+  traefik:
+    image: traefik:v3.2
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.swarmMode=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=minidokploy_traefik-public
+      - --entrypoints.web.address=:80
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - traefik-public
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+  app:
+    image: minidokploy/app:latest
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      DATABASE_URL: file:/app/data/mini-dokploy.db
+      BUILDS_DIR: /app/builds
+      BASE_DOMAIN: 127.0.0.1.sslip.io
+      PUBLIC_URL: http://minidokploy.127.0.0.1.sslip.io
+      TRAEFIK_NETWORK: minidokploy_traefik-public
+      STACK_NAME: minidokploy
+      AUTH_ENABLED: "true"
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-change-me-in-production}
+      NEXT_PUBLIC_AUTH_ENABLED: "true"
+    volumes:
+      - minidokploy-data:/app/data
+      - minidokploy-builds:/app/builds
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik-public
+    deploy:
+      replicas: 1
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.minidokploy.rule=Host(`minidokploy.127.0.0.1.sslip.io`)
+        - traefik.http.routers.minidokploy.entrypoints=web
+        - traefik.http.services.minidokploy.loadbalancer.server.port=3000
+
+volumes:
+  minidokploy-data:
+  minidokploy-builds:

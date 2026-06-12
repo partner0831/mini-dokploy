@@ -1,0 +1,43 @@
+{
+  "name": "mini-dokploy",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsx server.ts",
+    "build": "next build",
+    "start": "tsx server.ts",
+    "stack:up": "node -e \"require('child_process').execSync(process.platform==='win32'?'powershell -File scripts/start.ps1':'bash scripts/start.sh',{stdio:'inherit'})\"",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/server/db/migrate.ts",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.62.8",
+    "@trpc/client": "^11.0.0-rc.648",
+    "@trpc/next": "^11.0.0-rc.648",
+    "@trpc/react-query": "^11.0.0-rc.648",
+    "@trpc/server": "^11.0.0-rc.648",
+    "better-auth": "^1.2.5",
+    "better-sqlite3": "^12.0.0",
+    "dockerode": "^4.0.4",
+    "drizzle-orm": "^0.45.2",
+    "nanoid": "^5.0.9",
+    "next": "^14.2.22",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "superjson": "^2.2.2",
+    "ws": "^8.18.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/dockerode": "^3.3.34",
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@types/ws": "^8.5.13",
+    "drizzle-kit": "^0.31.4",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
